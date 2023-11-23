@@ -8,12 +8,12 @@ namespace jack {
     typedef unsigned long long size_t;
 
     template<typename T>
-    struct node {
+    struct list_node {
         T Val;
-        node<T> *Next;
-        node<T> *Prev;
+        list_node<T> *Next;
+        list_node<T> *Prev;
 
-        node(const T &_Val = T()) {
+        list_node(const T &_Val = T()) {
             Val = _Val;
             Next = nullptr;
             Prev = nullptr;
@@ -21,13 +21,13 @@ namespace jack {
     };
 
     template<typename T, typename Ref, typename Ptr>
-    struct iterator {
-        typedef node<T> list_node;
-        typedef iterator<T, Ref, Ptr> self;
+    struct list_iterater {
+        typedef list_node<T> node;
+        typedef list_iterater<T, Ref, Ptr> self;
 
-        list_node *pnode;
+        node *pnode;
 
-        iterator(list_node *pnode) : pnode(pnode) {}
+        list_iterater(node *pnode) : pnode(pnode) {}
 
         Ref operator*() {
             return pnode->Val;
@@ -70,19 +70,19 @@ namespace jack {
 
     template<typename T>
     class list {
-        typedef node<T> list_node;
+        typedef list_node<T> node;
     public:
-        typedef iterator<T, T &, T *> list_iterator;
-        typedef iterator<T, const T &, const T *> const_list_iterator;
+        typedef list_iterater<T, T &, T *> iterator;
+        typedef list_iterater<T, const T &, const T *> const_iterator;
 
         list() {
-            head = new list_node();
+            head = new node();
             head->Next = head;
             head->Prev = head;
         }
 
         list(const list<T> &other) {
-            head = new list_node();
+            head = new node();
             head->Next = head;
             head->Prev = head;
             for (auto it = other.begin(); it != other.end(); it++) {
@@ -106,48 +106,48 @@ namespace jack {
             head = nullptr;
         }
 
-        list_iterator begin() {
-            return list_iterator(head->Next);
+        iterator begin() {
+            return iterator(head->Next);
         }
 
-        list_iterator end() {
-            return list_iterator(head);
+        iterator end() {
+            return iterator(head);
         }
 
-        const_list_iterator begin() const {
-            return const_list_iterator(head->Next);
+        const_iterator cbegin() const {
+            return const_iterator(head->Next);
         }
 
-        const_list_iterator end() const {
-            return const_list_iterator(head);
+        const_iterator cend() const {
+            return const_iterator(head);
         }
 
-        void insert(list_iterator pos, const T &val) {
+        void insert(iterator pos, const T &val) {
 
-            list_node *newnode = new list_node(val);
+            node *newnode = new node(val);
 
             newnode->Next = pos.pnode->Next;
             pos.pnode->Next = newnode;
 
             newnode->Prev = pos.pnode;
-            newnode->Prev = pos.pnode;
+            newnode->Next->Prev = newnode;
 
         }
 
-        list_iterator erase(list_iterator pos) {
+        iterator erase(iterator pos) {
             if (pos.pnode == head) {
                 return pos;
             }
-            list_node *next = pos.pnode->Next;
-            list_node *prev = pos.pnode->Prev;
+            node *next = pos.pnode->Next;
+            node *prev = pos.pnode->Prev;
             delete pos.pnode;
             prev->Next = next;
             next->Prev = prev;
-            return list_iterator(next);
+            return iterator(next);
         }
 
         void clear() {
-            list_iterator it = begin();
+            iterator it = begin();
             while (it != end()) {
                 erase(it++);
             }
@@ -182,7 +182,7 @@ namespace jack {
         }
 
     private:
-        list_node *head;
+        node *head;
     };
 
 }
