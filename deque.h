@@ -13,31 +13,25 @@ namespace jack {
     template<typename T>
     class deque : public queue<T> {
     public:
-        typedef queue_iterator<T, T &, T *> iterator;
-        typedef queue_iterator<T, const T &, const T *> const_iterator;
-
         deque() : queue<T>() {}
 
         deque(const deque<T> &other) : queue<T>(other) {}
 
         void pop_back() {
-            queue<T>::erase(--queue<T>::end());
+            this->erase(--this->end());
         }
 
         void push_front(const T &val) {
-            queue<T>::insert(queue<T>::front(), val);
+            this->insert(this->front(), val);
         }
 
-        iterator back() {
-            return iterator(queue<T>::head->prev);
+        typename queue<T>::iterator back() {
+            return this->iterator(this->head->prev);
         }
 
-        const_iterator cback() const {
-            return const_iterator(queue<T>::head->prev);
+        typename queue<T>::const_iterator cback() const {
+            return const_iterator(this->head->prev);
         }
-
-    protected:
-        typedef queue_node<T> node;
     };
 }
 
